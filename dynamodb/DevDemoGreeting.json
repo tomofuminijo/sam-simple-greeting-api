@@ -1,0 +1,12 @@
+{
+    "TableName": "DevDemoGreeting",
+    "KeySchema": [{
+        "KeyType": "HASH",
+        "AttributeName": "lang"
+    }],
+    "AttributeDefinitions": [{
+        "AttributeName": "lang",
+        "AttributeType": "S"
+    }],
+    "BillingMode": "PAY_PER_REQUEST"
+}

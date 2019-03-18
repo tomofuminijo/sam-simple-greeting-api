@@ -1,0 +1,43 @@
+{
+    "MyGreetingDynamoDBFunction": {
+        "lambda": {
+            "pathParameters": {
+                "lang": "ja"
+            }
+        },
+        "apigateway": {
+            "path": "/hello/en",
+            "method": {
+                "value": "GET",
+                "items": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "HEAD",
+                    "OPTIONS",
+                    "PATCH"
+                ]
+            }
+        }
+    },
+    "MyGreetingDynamoDBPutFunction": {
+        "lambda": {
+            "pathParameters": {
+                "lang": "ja"
+            }
+        },
+        "apigateway": {
+            "path": "/hello/ja",
+            "method": {
+                "value": "PUT",
+                "items": [
+                    "PUT"
+                ]
+            },
+            "body": {
+                "hello": "こんにちは"
+            }
+        }
+    }
+}
