@@ -19,8 +19,8 @@ Resources:
             Method: GET
       Environment:
         Variables:
-          DYNAMDB_LOCALURL: 
-          DYNAMODB_REGION:
+          DYNAMDB_LOCALURL: ''
+          DYNAMODB_REGION: ''
   MyGreetingDynamoDBPutFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -38,8 +38,8 @@ Resources:
             Method: PUT
       Environment:
         Variables:
-          DYNAMDB_LOCALURL: 
-          DYNAMODB_REGION:
+          DYNAMDB_LOCALURL: ''
+          DYNAMODB_REGION: ''
   MyGreetingDynamoDBGetFunctionPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:

@@ -1,0 +1,13 @@
+{
+    "MyGreetingDynamoDBGetFunction": {
+        "apigateway": {
+            "path": "/hello/ja",
+            "method": {
+                "value": "GET",
+                "items": [
+                    "GET"
+                ]
+            }
+        }
+    }
+}
