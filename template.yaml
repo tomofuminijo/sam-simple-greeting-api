@@ -17,6 +17,10 @@ Resources:
           Properties:
             Path: /hello/{lang}
             Method: GET
+      Environment:
+        Variables:
+          DYNAMDB_LOCALURL: 
+          DYNAMODB_REGION:
   MyGreetingDynamoDBPutFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -32,6 +36,10 @@ Resources:
           Properties:
             Path: /hello/{lang}
             Method: PUT
+      Environment:
+        Variables:
+          DYNAMDB_LOCALURL: 
+          DYNAMODB_REGION:
   MyGreetingDynamoDBGetFunctionPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:

@@ -1,6 +1,11 @@
 const AWS = require('aws-sdk');
 
-const BUCKET_NAME = process.env['BUCKET_NAME'];
+if (process.env.DYNAMDB_LOCALURL) {
+    AWS.config.update({
+        endpoint: process.env.DYNAMDB_LOCALURL,
+        retion: process.env.DYNAMODB_REGION
+    });
+}
 const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = (event, context, callback) => {

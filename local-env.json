@@ -1,0 +1,11 @@
+{
+    "MyGreetingDynamoDBGetFunction": {
+        "DYNAMDB_LOCALURL": "http://LOCAL_IP:8000",
+        "DYNAMODB_REGION": "us-east-1"
+    },
+    "MyGreetingDynamoDBPutFunction": {
+        "DYNAMDB_LOCALURL": "http://LOCAL_IP:8000",
+        "DYNAMODB_REGION": "us-east-1"
+    }
+}
+

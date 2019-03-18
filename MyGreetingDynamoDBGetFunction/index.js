@@ -1,12 +1,16 @@
 const AWS = require('aws-sdk');
 
-const BUCKET_NAME = process.env['BUCKET_NAME'];
+if (process.env.DYNAMDB_LOCALURL) {
+    AWS.config.update({
+        endpoint: process.env.DYNAMDB_LOCALURL,
+        retion: process.env.DYNAMODB_REGION
+    });
+}
+
 const ddb = new AWS.DynamoDB.DocumentClient();
-const s3 = new AWS.S3();
+
 
 exports.handler = (event, context, callback) => {
-
-    console.log('Received event: ', event);
 
     // Because we're using a Cognito User Pools authorizer, all of the claims
     // included in the authentication token are provided in the request context.
@@ -28,7 +32,6 @@ exports.handler = (event, context, callback) => {
         }
         else {
             console.log("Get succeeded.: ", data);
-            //            console.log("Query succeeded.: " + JSON.stringify(data));
 
             callback(null, {
                 statusCode: 200,
@@ -55,3 +58,4 @@ function errorResponse(errorMessage, awsRequestId, callback) {
         },
     });
 }
+
