@@ -4,6 +4,11 @@ Description: An AWS Serverless Specification template describing your function.
 Parameters:
   DeployBucketName:
     Type: String
+Globals:
+  Function:
+    Runtime: nodejs8.10
+    MemorySize: 128
+    Timeout: 15
 Resources:
   GreetingApi:
     Type: AWS::Serverless::Api
@@ -18,10 +23,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: MyGreetingDynamoDBGetFunction/index.handler
-      Runtime: nodejs6.10
       Description: ''
-      MemorySize: 128
-      Timeout: 15
       Role: !GetAtt MyGreetingDynamoDBRole.Arn
       Events:
         LambdaMicroservice:
@@ -38,10 +40,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: MyGreetingDynamoDBPutFunction/index.handler
-      Runtime: nodejs6.10
       Description: ''
-      MemorySize: 128
-      Timeout: 15
       Role: !GetAtt MyGreetingDynamoDBRole.Arn
       Events:
         LambdaMicroservice:
