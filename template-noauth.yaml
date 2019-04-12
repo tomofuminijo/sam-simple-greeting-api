@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  GreetingApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: 'prod'
+  MyGreetingDynamoDBGetFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: MyGreetingDynamoDBGetFunction/index.handler
+      Runtime: nodejs6.10
+      Description: ''
+      MemorySize: 128
+      Timeout: 15
+      Role: !GetAtt MyGreetingDynamoDBRole.Arn
+      Events:
+        LambdaMicroservice:
+          Type: Api
+          Properties:
+            Path: /hello/{lang}
+            Method: GET
+            RestApiId: !Ref GreetingApi
+      Environment:
+        Variables:
+          DYNAMDB_LOCALURL: ''
+          DYNAMODB_REGION: ''
+  MyGreetingDynamoDBPutFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: MyGreetingDynamoDBPutFunction/index.handler
+      Runtime: nodejs6.10
+      Description: ''
+      MemorySize: 128
+      Timeout: 15
+      Role: !GetAtt MyGreetingDynamoDBRole.Arn
+      Events:
+        LambdaMicroservice:
+          Type: Api
+          Properties:
+            Path: /hello/{lang}
+            Method: PUT
+            RestApiId: !Ref GreetingApi
+      Environment:
+        Variables:
+          DYNAMDB_LOCALURL: ''
+          DYNAMODB_REGION: ''
+  MyGreetingDynamoDBGetFunctionPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName:
+        'Fn::GetAtt':
+          - MyGreetingDynamoDBGetFunction
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
+  MyGreetingDynamoDBPutFunctionPermission:
+      Type: 'AWS::Lambda::Permission'
+      Properties:
+        Action: 'lambda:InvokeFunction'
+        FunctionName:
+          'Fn::GetAtt':
+            - MyGreetingDynamoDBPutFunction
+            - Arn
+        Principal: apigateway.amazonaws.com
+        SourceArn:
+          'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
+  MyGreetingDynamoDBRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "dynamodb_access_lambda"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "cloudwatch:*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "logs:*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "dynamodb:*"
+                Resource: "*"
+Outputs:
+  GreetingApiUri:
+    Value: !Sub "https://${GreetingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"

@@ -18,15 +18,18 @@ exports.handler = (event, context, callback) => {
     const lang = event.pathParameters.lang;
     const body = JSON.parse(event.body);
     const hello = body.hello;
+    const langname = body.langname;
     console.log('lang : ', lang);
     console.log('body : ', body);
     console.log('hello : ', hello);
+    console.log('langname : ', langname);
 
     var params = {
         TableName: "DevDemoGreeting",
         Item: {
             "lang": lang,
-            "hello": hello
+            "hello": hello,
+            "langname": langname
         }
     };
     ddb.put(params, function(err, data) {
