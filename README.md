@@ -40,7 +40,7 @@ aws dynamodb list-tables --endpoint-url http://localhost:8000 --region local-tes
 以下のコマンドを実行します。
 
 ```
-sam local start-api --env-vars local-env.json --template template-noauth.yaml
+sam local start-api --env-vars local-env.json
 ```
 
 別のターミナルを開いてローカル上に起動したAPIをテスト実行します。以下のコマンドを実行してデータを格納します。
@@ -99,8 +99,8 @@ aws dynamodb get-item --table-name "DevDemoGreeting" --key '{"lang": {"S":"ja"}}
 # Deploya 用のS3 バケットの作成
 aws s3 mb s3://<your_bucket_name>
 
-# 
-sam package --template-file template-noauth.yaml --output-template-file packaged.yaml --s3-bucket <your_bucket_name>
+# パッケージ&デプロイ
+sam package --output-template-file packaged.yaml --s3-bucket <your_bucket_name>
 sam deploy --template-file packaged.yaml --stack-name sam-simple-greeting-api --capabilities CAPABILITY_IAM
 ```
 
@@ -124,6 +124,7 @@ curl -X GET ${GreetingApiUri}/hello/ja
 ```
 {"hello":"こんにちは","langname":"Japanese","lang":"j
 ```
+
 
 ## 後処理
 

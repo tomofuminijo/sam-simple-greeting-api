@@ -1,9 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: An AWS Serverless Specification template describing your function.
-Parameters:
-  DeployBucketName:
-    Type: String
 Globals:
   Function:
     Runtime: nodejs8.10
@@ -14,11 +11,8 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: 'prod'
-      DefinitionBody:
-        Fn::Transform:
-          Name: AWS::Include
-          Parameters:
-            Location: !Sub 's3://${DeployBucketName}/openapi.yaml'
+      Auth:
+        DefaultAuthorizer: AWS_IAM
   MyGreetingDynamoDBGetFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -101,4 +95,6 @@ Resources:
                 Resource: "*"
 Outputs:
   GreetingApiUri:
-    Value: !Sub "https://${GreetingApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${GreetingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+  GreetingApiId:
+    Value: !Ref GreetingApi

@@ -11,6 +11,8 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: 'prod'
+      Auth:
+        DefaultAuthorizer: NONE
   MyGreetingDynamoDBGetFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
