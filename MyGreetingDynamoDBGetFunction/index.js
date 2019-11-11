@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 if (process.env.DYNAMDB_LOCALURL) {
     AWS.config.update({
         endpoint: process.env.DYNAMDB_LOCALURL,
-        retion: process.env.DYNAMODB_REGION
+        region: process.env.DYNAMODB_REGION
     });
 }
 
