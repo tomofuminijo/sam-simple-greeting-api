@@ -92,10 +92,15 @@ aws dynamodb get-item --table-name "DevDemoGreeting" --key '{"lang": {"S":"ja"}}
 
 ## AWS にデプロイする
 
-以下のコマンドを実行して、パッケージングおよびデプロイを実施します。
+以下のコマンドを実行して、パッケージングおよびデプロイを実施します。  
+<your_bucket_name> は適当な名前に変更してください。
 
 ```
-sam package --template-file template-noauth.yaml --output-template-file packaged.yaml --s3-bucket devdemodeploy.nijot.org
+# Deploya 用のS3 バケットの作成
+aws s3 mb s3://<your_bucket_name>
+
+# 
+sam package --template-file template-noauth.yaml --output-template-file packaged.yaml --s3-bucket <your_bucket_name>
 sam deploy --template-file packaged.yaml --stack-name sam-simple-greeting-api --capabilities CAPABILITY_IAM
 ```
 
@@ -130,4 +135,7 @@ aws dynamodb delete-table --table-name DevDemoGreeting
 
 # SAM により作成されれたCloudFormation Stacksの削除
 aws cloudformation delete-stack --stack-name sam-simple-greeting-api
+
+# デプロイ用S3 バケットを削除
+aws s3 rb s3://<your_bucket_name> --force
 ```
