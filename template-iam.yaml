@@ -3,7 +3,7 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: An AWS Serverless Specification template describing your function.
 Globals:
   Function:
-    Runtime: nodejs8.10
+    Runtime: nodejs12.x
     MemorySize: 128
     Timeout: 15
 Resources:
