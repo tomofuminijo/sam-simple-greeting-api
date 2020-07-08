@@ -1,3 +1,4 @@
 .application.json
 local-env.json
 packaged.yaml
+samconfig.toml

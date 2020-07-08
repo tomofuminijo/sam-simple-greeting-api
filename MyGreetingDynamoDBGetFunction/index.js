@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 
+// Settings for DynamoDB Local
 if (process.env.DYNAMDB_LOCALURL) {
     AWS.config.update({
         endpoint: process.env.DYNAMDB_LOCALURL,
@@ -8,19 +9,17 @@ if (process.env.DYNAMDB_LOCALURL) {
 }
 
 const ddb = new AWS.DynamoDB.DocumentClient();
+const DDB_TABLE = process.env['DDB_TABLE'];
 
 
 exports.handler = (event, context, callback) => {
 
-    // Because we're using a Cognito User Pools authorizer, all of the claims
-    // included in the authentication token are provided in the request context.
-    // This includes the username as well as other attributes.
     const lang = event.pathParameters.lang;
 
     console.log('lang : ' + lang);
 
     var params = {
-        TableName: "DevDemoGreeting",
+        TableName: DDB_TABLE,
         Key: {
             "lang": lang
         }

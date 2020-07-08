@@ -1,24 +1,41 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: An AWS Serverless Specification template describing your function.
+Parameters:
+  TABLENAME:
+    Type: String
+    Description: The DynamoDB table for greeting information.
+    Default: 'SAMDemoGreeting'
+  APIAUTH:
+    Type: String
+    Description: API Authorizer (NONE or AWS_IAM)
+    Default: NONE
 Globals:
   Function:
     Runtime: nodejs12.x
     MemorySize: 128
     Timeout: 15
+  Api:
+    Cors:
+      AllowMethods: "'OPTIONS,POST,GET'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
+    EndpointConfiguration: REGIONAL
 Resources:
   GreetingApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: 'prod'
+      StageName: 'Prod'
       Auth:
-        DefaultAuthorizer: NONE
+        DefaultAuthorizer: !Ref APIAUTH
   MyGreetingDynamoDBGetFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: MyGreetingDynamoDBGetFunction/index.handler
+      Handler: index.handler
+      CodeUri: MyGreetingDynamoDBGetFunction
       Description: ''
-      Role: !GetAtt MyGreetingDynamoDBRole.Arn
+      Policies:
+        - AmazonDynamoDBReadOnlyAccess
       Events:
         LambdaMicroservice:
           Type: Api
@@ -28,14 +45,17 @@ Resources:
             RestApiId: !Ref GreetingApi
       Environment:
         Variables:
+          DDB_TABLE: !Ref TABLENAME
           DYNAMDB_LOCALURL: ''
           DYNAMODB_REGION: ''
   MyGreetingDynamoDBPutFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: MyGreetingDynamoDBPutFunction/index.handler
+      Handler: index.handler
+      CodeUri: MyGreetingDynamoDBPutFunction
       Description: ''
-      Role: !GetAtt MyGreetingDynamoDBRole.Arn
+      Policies:
+        - AmazonDynamoDBFullAccess
       Events:
         LambdaMicroservice:
           Type: Api
@@ -45,54 +65,20 @@ Resources:
             RestApiId: !Ref GreetingApi
       Environment:
         Variables:
+          DDB_TABLE: !Ref TABLENAME
           DYNAMDB_LOCALURL: ''
           DYNAMODB_REGION: ''
-  MyGreetingDynamoDBGetFunctionPermission:
-    Type: 'AWS::Lambda::Permission'
+  SAMDemoGreeting:
+    Type: 'AWS::DynamoDB::Table'
     Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName:
-        'Fn::GetAtt':
-          - MyGreetingDynamoDBGetFunction
-          - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
-  MyGreetingDynamoDBPutFunctionPermission:
-      Type: 'AWS::Lambda::Permission'
-      Properties:
-        Action: 'lambda:InvokeFunction'
-        FunctionName:
-          'Fn::GetAtt':
-            - MyGreetingDynamoDBPutFunction
-            - Arn
-        Principal: apigateway.amazonaws.com
-        SourceArn:
-          'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
-  MyGreetingDynamoDBRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: "sts:AssumeRole"
-      Policies:
-        - PolicyName: "dynamodb_access_lambda"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action: "cloudwatch:*"
-                Resource: "*"
-              - Effect: "Allow"
-                Action: "logs:*"
-                Resource: "*"
-              - Effect: "Allow"
-                Action: "dynamodb:*"
-                Resource: "*"
+      TableName: !Ref TABLENAME
+      AttributeDefinitions:
+        - AttributeName: lang
+          AttributeType: S
+      KeySchema:
+        - AttributeName: lang
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
 Outputs:
   GreetingApiUri:
-    Value: !Sub "https://${GreetingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+    Value: !Sub "https://${GreetingApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
