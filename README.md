@@ -31,7 +31,7 @@ docker run -p 8000:8000 amazon/dynamodb-local
 
 ```
 cd sam-simple-greeting-api
-aws dynamodb create-table --cli-input-json file://./dynamodb/DevDemoGreeting.json --endpoint-url http://localhost:8000 --region local-test
+aws dynamodb create-table --cli-input-json file://./dynamodb/SAMDemoGreeting.json --endpoint-url http://localhost:8000 --region local-test
 aws dynamodb list-tables --endpoint-url http://localhost:8000 --region local-test
 ```
 
@@ -69,7 +69,7 @@ curl -X GET http://localhost:3000/hello/ja
 DynamoDB Local の中身を確認します。
 
 ```
-aws dynamodb get-item --table-name "DevDemoGreeting" --key '{"lang": {"S":"ja"}}' --endpoint-url http://localhost:8000 --region local-test
+aws dynamodb get-item --table-name "SAMDemoGreeting" --key '{"lang": {"S":"ja"}}' --endpoint-url http://localhost:8000 --region local-test
 ```
 
 以下のような内容が出力されれば実行できています。
@@ -93,28 +93,41 @@ aws dynamodb get-item --table-name "DevDemoGreeting" --key '{"lang": {"S":"ja"}}
 ## AWS にデプロイする
 
 以下のコマンドを実行して、パッケージングおよびデプロイを実施します。  
-<your_bucket_name> は適当な名前に変更してください。
 
 ```
-# Deploya 用のS3 バケットの作成
-aws s3 mb s3://<your_bucket_name>
-
-# パッケージ&デプロイ
-sam package --output-template-file packaged.yaml --s3-bucket <your_bucket_name>
-sam deploy --template-file packaged.yaml --stack-name sam-simple-greeting-api --capabilities CAPABILITY_IAM
+cd sam-simple-greeting-api
+sam deploy --guided
 ```
 
-DynamoDB テーブルを作成します。
+プロンプトが表示されたら[Stack Name] に以下のように入力し、それ以外は全てデフォルトでEnter を押します。
 
 ```
-aws dynamodb create-table --cli-input-json file://./dynamodb/DevDemoGreeting.json
+Stack Name [sam-app]: sam-demo-greeting-app
+```
+
+デプロイが始まると以下ような内容が表示されます。
+
+```
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ResourceStatus                               ResourceType                                 LogicalResourceId                            ResourceStatusReason                       
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE_IN_PROGRESS                           AWS::IAM::Role                               MyGreetingDynamoDBGetFunctionRole            -                                          
+CREATE_IN_PROGRESS                           AWS::DynamoDB::Table                         SAMDemoGreeting                              -                                          
+CREATE_IN_PROGRESS                           AWS::IAM::Role                               MyGreetingDynamoDBPutFunctionRole            -                                          
+CREATE_IN_PROGRESS                           AWS::DynamoDB::Table                         SAMDemoGreeting                              Resource creation Initiated                
+CREATE_IN_PROGRESS                           AWS::IAM::Role                               MyGreetingDynamoDBGetFunctionRole            Resource creation Initiated 
+
+・・・ 略 ・・・
+
+CREATE_COMPLETE                              AWS::CloudFormation::Stack                   sam-demo-greeting-app                        -                                          
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ```
 
 以下のコマンドを実行して、データの登録および取得ができることを確認します。
 
 ```
-GreetingApiUri=$(aws cloudformation describe-stacks --stack-name sam-simple-greeting-api --query 'Stacks[*].Outputs[?OutputKey==`GreetingApiUri`].OutputValue' --output text)
+GreetingApiUri=$(aws cloudformation describe-stacks --stack-name sam-demo-greeting-app --query 'Stacks[*].Outputs[?OutputKey==`GreetingApiUri`].OutputValue' --output text)
 curl -X PUT --data '{"hello":"こんにちは", "langname":"Japanese"}' ${GreetingApiUri}/hello/ja
 curl -X GET ${GreetingApiUri}/hello/ja
 ```
@@ -131,12 +144,7 @@ curl -X GET ${GreetingApiUri}/hello/ja
 削除する場合は、以下のコマンドを実行してください。
 
 ```
-# DynamoDB の削除
-aws dynamodb delete-table --table-name DevDemoGreeting
-
 # SAM により作成されれたCloudFormation Stacksの削除
-aws cloudformation delete-stack --stack-name sam-simple-greeting-api
-
-# デプロイ用S3 バケットを削除
-aws s3 rb s3://<your_bucket_name> --force
+aws cloudformation delete-stack --stack-name sam-demo-greeting-app
+aws cloudformation wait stack-delete-complete --stack-name sam-demo-greeting-app
 ```

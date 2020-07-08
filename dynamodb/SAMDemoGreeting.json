@@ -1,5 +1,5 @@
 {
-    "TableName": "DevDemoGreeting",
+    "TableName": "SAMDemoGreeting",
     "KeySchema": [{
         "KeyType": "HASH",
         "AttributeName": "lang"
