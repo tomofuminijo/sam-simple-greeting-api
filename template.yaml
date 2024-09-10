@@ -12,9 +12,9 @@ Parameters:
     Default: NONE
 Globals:
   Function:
-    Runtime: nodejs12.x
+    Runtime: nodejs16.x
     MemorySize: 128
-    Timeout: 15
+    Timeout: 30
   Api:
     Cors:
       AllowMethods: "'OPTIONS,POST,GET'"
